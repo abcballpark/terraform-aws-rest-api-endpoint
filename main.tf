@@ -60,7 +60,8 @@ resource "aws_api_gateway_method" "endpoint" {
   rest_api_id   = var.api_id
   resource_id   = aws_api_gateway_resource.endpoint.id
   http_method   = var.http_method
-  authorization = "NONE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = var.authorizer_id
 }
 
 resource "aws_api_gateway_integration" "redirect" {
