@@ -1,3 +1,5 @@
+///////////////////////////////////////////////////////////////////////////////
+// Lambda Definition 
 resource "aws_lambda_function" "endpoint_fn" {
   function_name = "${var.api_name}-${var.endpoint_name}"
 
@@ -11,6 +13,9 @@ resource "aws_lambda_function" "endpoint_fn" {
 
   role = aws_iam_role.exec_role.arn
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Lambda Permissions
 
 data "aws_iam_policy_document" "lambda_exec_policy" {
   version = "2012-10-17"
@@ -26,7 +31,7 @@ data "aws_iam_policy_document" "lambda_exec_policy" {
 }
 
 resource "aws_iam_role" "exec_role" {
-  name               = "api-${var.name}"
+  name               = var.api_name
   assume_role_policy = data.aws_iam_policy_document.lambda_exec_policy.json
 }
 
@@ -35,25 +40,34 @@ resource "aws_iam_role_policy_attachment" "exec_role_policy_1" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_apigatewayv2_route" "endpoint" {
-  api_id    = var.api_id
-  route_key = var.route_key
-  target    = "integrations/${aws_apigatewayv2_integration.endpoint.id}"
-}
 
-resource "aws_apigatewayv2_integration" "endpoint" {
-  api_id = var.api_id
-
-  integration_uri    = aws_lambda_function.endpoint_fn.invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
-
-resource "aws_lambda_permission" "endpoint" {
-  statement_id = "AllowExecutionFromAPIGateway"
-  action = "lambda:InvokeFunction"
+resource "aws_lambda_permission" "allow_api_gateway" {
   function_name = aws_lambda_function.endpoint_fn.function_name
-  principal = "apigateway.amazonaws.com"
+  principal     = "apigateway.amazonaws.com"
+  action        = "lambda:InvokeFunction"
+}
 
-  source_arn = "${var.execution_arn}/*/*"
+///////////////////////////////////////////////////////////////////////////////
+// API Gateway
+
+resource "aws_api_gateway_resource" "endpoint" {
+  path_part   = var.endpoint_name
+  parent_id   = var.parent_resource_id
+  rest_api_id = var.api_id
+}
+
+resource "aws_api_gateway_method" "endpoint" {
+  rest_api_id   = var.api_id
+  resource_id   = aws_api_gateway_resource.endpoint.id
+  http_method   = var.http_method
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "redirect" {
+  rest_api_id             = var.api_id
+  resource_id             = aws_api_gateway_resource.endpoint.id
+  http_method             = aws_api_gateway_method.endpoint.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.endpoint_fn.invoke_arn
 }
