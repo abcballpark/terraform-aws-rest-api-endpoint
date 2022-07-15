@@ -1,9 +1,3 @@
-variable "tf_org" {
-  type = string
-  description = "Terraform Cloud workspace"
-  default = "abcballpark"
-}
-
 variable "api_name" {
   type = string
   description = "Human-readable name for API Gateway REST API"
