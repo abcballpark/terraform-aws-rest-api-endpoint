@@ -71,3 +71,13 @@ resource "aws_api_gateway_integration" "redirect" {
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.endpoint_fn.invoke_arn
 }
+
+resource "aws_api_gateway_deployment" "dev" {
+  rest_api_id = var.api_id
+}
+
+resource "aws_api_gateway_stage" "dev" {
+  rest_api_id   = var.api_id
+  deployment_id = aws_api_gateway_deployment.dev.id
+  stage_name    = "dev"
+}
