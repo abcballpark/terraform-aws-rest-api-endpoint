@@ -36,11 +36,3 @@ variable "src_hash" {
 variable "api_id" {
   type = string
 }
-
-variable "route_key" {
-  type = string
-}
-
-variable "execution_arn" {
-  type = string
-}
