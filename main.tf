@@ -86,13 +86,3 @@ resource "aws_api_gateway_method_response" "endpoint" {
   http_method = aws_api_gateway_method.endpoint.http_method
   status_code = aws_api_gateway_integration_response.response_200.status_code
 }
-
-resource "aws_api_gateway_deployment" "dev" {
-  rest_api_id = var.api_id
-}
-
-resource "aws_api_gateway_stage" "dev" {
-  rest_api_id   = var.api_id
-  deployment_id = aws_api_gateway_deployment.dev.id
-  stage_name    = "dev"
-}
