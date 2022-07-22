@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "lambda_exec_policy" {
 }
 
 resource "aws_iam_role" "exec_role" {
-  name               = var.api_name
+  name               = "${var.api_name}-${var.endpoint_name}-executor"
   assume_role_policy = data.aws_iam_policy_document.lambda_exec_policy.json
 }
 
