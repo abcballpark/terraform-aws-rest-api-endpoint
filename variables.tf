@@ -42,6 +42,6 @@ variable "authorizer_id" {
 }
 
 variable "dynamo_table_arn" {
-  tyoe    = string
+  type    = string
   default = ""
 }
