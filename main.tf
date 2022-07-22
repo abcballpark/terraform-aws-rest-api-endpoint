@@ -15,7 +15,7 @@ resource "aws_lambda_function" "endpoint_fn" {
 }
 
 resource "aws_cloudwatch_log_group" "endpoint_fn_exec_log" {
-  name = "/aws/lambda/${var.api_name}=${var.endpoint_name}"
+  name = "/aws/lambda/${var.api_name}-${var.endpoint_name}"
 }
 
 ///////////////////////////////////////////////////////////////////////////////
