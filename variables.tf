@@ -40,3 +40,8 @@ variable "api_id" {
 variable "authorizer_id" {
   type = string
 }
+
+variable "dynamo_table_arn" {
+  tyoe    = string
+  default = ""
+}

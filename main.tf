@@ -51,6 +51,30 @@ resource "aws_lambda_permission" "allow_api_gateway" {
   action        = "lambda:InvokeFunction"
 }
 
+data "aws_iam_policy_document" "dynamodb_rw" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "dynamodb:PutItem",
+      "dynamodb:GetItem",
+      "dynamodb:UpdateItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:BatchGetItem",
+    ]
+    resources = [var.dynamo_table_arn]
+  }
+}
+
+resource "aws_iam_policy" "dynamodb_rw" {
+  name = "${var.api_name}-${var.endpoint_name}-dynamodb-rw"
+  policy = data.aws_iam_policy_document.dynamodb_rw.json
+}
+
+resource "aws_iam_role_policy_attachment" "exec_role_policy_2" {
+  role = aws_iam_role.exec_role.name
+  policy_arn = aws_iam_policy.dynamodb_rw.arn
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // API Gateway
 
